@@ -42,6 +42,7 @@ The expected timing of a synchronous RAM was as expected of the waveform behavio
 
 ### Behavioural & Testbench :
 BEHAVIOURAL OPERATION:
+
 The contents of the RAM were created as a single sequential block:
  
     code: always @(posedge clk)
@@ -58,6 +59,7 @@ The outpuut is gated using:
 to ensure that the RAM acts in a realistic manner when it is on a shared bus.
 
 TESTBENCH OPERATION:
+
 The testbench provides the inputs to the RAM with a sequence of reset pulse, write cycles and read cycles
 
  it uses:
