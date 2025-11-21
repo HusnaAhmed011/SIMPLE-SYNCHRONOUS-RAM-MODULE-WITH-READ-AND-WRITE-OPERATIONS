@@ -16,7 +16,7 @@
 ### Software used for Implementation:
 The whole project was implemented in the Visual Studio Code, and Icarus Verilog (iverilog) was installed and embedded in the terminal. The compilation was carried out with the help of the following command:
 
-         code: iverilog -o basic_alu_tb.vvp basic_alu_tb.v
+         code: iverilog -o syn_ram_tb.vvp syn_ram_tb.v
          
 This assembles the testbench and the Synchronous RAM module into one simulation. The following was used to run the simulation:
 
