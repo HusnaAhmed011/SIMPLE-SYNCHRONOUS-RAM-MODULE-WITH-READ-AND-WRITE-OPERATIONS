@@ -18,45 +18,72 @@ The whole project was implemented in the Visual Studio Code, and Icarus Verilog 
 
          code: iverilog -o basic_alu_tb.vvp basic_alu_tb.v
          
-This assembles the testbench and the ALU module into one simulation. The following was used to run the simulation:
+This assembles the testbench and the Synchronous RAM module into one simulation. The following was used to run the simulation:
 
-         code: vvp basic_alu_tb.vvp
+         code: vvp syn_ram_tb.vvp
          
-The results of each operation were shown in the terminal output, which verified that the ALU gave a correct result with addition, subtraction, AND, OR, NOT, XOR and XNOR. Every test case yielded the expected outcomes and this confirmed that the ALU was operating well.
+The terminal output made sure that the RAM did all the tasks correctly.
+The values 10 and 01 were stored at the address 3 and address 7 respectively and during the read, both values were read correctly at the read phase, which confirms that it behaved correctly in synchronous mode.
 
 ### GTKWAVE - Waveform Simulator:
 GTKWave was then applied to open the generated VCD file to visualize the transitions between the signal:
 
           code: gtkwave
           
-GTKWave gave a clear picture of the variation of A, B, op and alu_out with time. The graphical wave form provided the actual time each operation was performed and it was proved that the ALU output was updated as soon as the operation code was altered. This confirmed that the design had been used correctly as a combinational circuit and that there was no glitching or undesirable transitions. The waveform also was comparable to what the printed terminal outputs showed, which also confirmed that the design was correct and the testbench.
+GTKWave helped to give a visual representation of clock transitions, address movement, write enable (we) timing, reset behaviour, registered output (dout_reg) updates and final dout output after OE gating.
+
+The waveform confirmed the following major behaviours:
+1. *Synchronous Write* took place at the rising edges of clock when we = 1.
+2. *Synchronous Read* wrote output on an increasing edge only.
+3. The *reset* was properly executed to set the output register to 00 then to normal operation.
+4. The output bus was gated by the correct use of *Output Enable(oe)*
+
+The expected timing of a synchronous RAM was as expected of the waveform behaviour which confirmed the design is correctly implemented and with no glitches or unwanted transitions.
 
 ### Behavioural & Testbench :
-The ALU is coded in a behavioral 
+BEHAVIOURAL OPERATION:
+The contents of the RAM were created as a single sequential block:
  
-    code: always@(*)
+    code: always @(posedge clk)
  
- block in which the operations are chosen by a 
- 
-    code: case(op) 
- 
- statement. This allows the module to directly use Verilog operators to do addition, subtraction, AND, OR and NOT without having to model gates.
+ Inside this block: 
+ • The *reset* resets the output register.
+ • *Read* takes data stored in memory and puts it in a registered output.
+ • *Write* occurs when *we = 1*, the din is stored in *mem[addr]*.
+ This provides complete synchrony of all operations like a normal digital RAM.
+The outpuut is gated using:
 
-The testbench is a reg signal driver that produces input values and op-codes and drives them into the ALU and their result is registered by means of 
+     code: assign douut = oe ? dout_reg : 2'b00;
 
-    code: $display("Operation %b", alu_out);
+to ensure that the RAM acts in a realistic manner when it is on a shared bus.
+
+TESTBENCH OPERATION:
+The testbench provides the inputs to the RAM with a sequence of reset pulse, write cycles and read cycles
+
+ it uses:
+
+    code: $dumpfile("syn_ram_tb.vcd"); //create a cvd file
+          $dumpvars(0, syn_ram_tb);
     
-and waveform dumps. It checks every step of operation serially so that the ALU can give the same output in all modes.
+to produce waveform traces and completely check behaviour by waveform examination and readback values of the simulation.
+
+Testbench includes controlled timing, clock generation and write the sequential operations followed by the read operaions to test the functionality of the RAM. This ensure that all the elements of RAM are tested.
 
 ## Conclusion:
-The ALU implemented all the necessary functions, addition, subtraction, AND, OR and NOT depending on the op-code, and the simulation completely confirmed its proper work. Besides the obligatory functions, XOR and XNOR were applied and tested as additional functionality and both functions worked properly in the final waveform and end terminal results.
+The Synchronous RAM was successfully implemented and verified. The design supports Synchronous Write, Synchronous Read, Registered Output, Reset Control and Output Enable.
+The behaviour of the RAM was consistent with the simulation and waveform analysis results, as the waveforms shows
+• There was appropriate storage of data written at rising edges.
+• After one clock cycle, Reads had the right values.
+• Reset and OE were working properly.
+The design is functional, dependable and clean. This establishes the correctness and compatibility of RAM module to work as a simple synchronous memory to be used in bigger digital systems.
 
 # OUTPUT 
 
-#### GTKWAVE:
+### GTKWAVE:
 
 <img width="1456" height="891" alt="Image" src="https://github.com/user-attachments/assets/0ee86b89-b0cf-4951-a5bb-ce2d7d3641e4" />
 
-#### VS TERMINAL:
+
+### VS TERMINAL:
 
  <img width="1829" height="1066" alt="Image" src="https://github.com/user-attachments/assets/dec452cf-add7-4763-acb1-73299fc6c7ae" />
