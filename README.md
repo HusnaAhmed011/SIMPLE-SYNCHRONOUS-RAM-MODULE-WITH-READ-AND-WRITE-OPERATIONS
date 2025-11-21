@@ -23,6 +23,7 @@ This assembles the testbench and the Synchronous RAM module into one simulation.
          code: vvp syn_ram_tb.vvp
          
 The terminal output made sure that the RAM did all the tasks correctly.
+
 The values 10 and 01 were stored at the address 3 and address 7 respectively and during the read, both values were read correctly at the read phase, which confirms that it behaved correctly in synchronous mode.
 
 ### GTKWAVE - Waveform Simulator:
@@ -33,9 +34,13 @@ GTKWave was then applied to open the generated VCD file to visualize the transit
 GTKWave helped to give a visual representation of clock transitions, address movement, write enable (we) timing, reset behaviour, registered output (dout_reg) updates and final dout output after OE gating.
 
 The waveform confirmed the following major behaviours:
+
 1. *Synchronous Write* took place at the rising edges of clock when we = 1.
+   
 2. *Synchronous Read* wrote output on an increasing edge only.
+   
 3. The *reset* was properly executed to set the output register to 00 then to normal operation.
+   
 4. The output bus was gated by the correct use of *Output Enable(oe)*
 
 The expected timing of a synchronous RAM was as expected of the waveform behaviour which confirmed the design is correctly implemented and with no glitches or unwanted transitions.
@@ -48,10 +53,15 @@ The contents of the RAM were created as a single sequential block:
     code: always @(posedge clk)
  
  Inside this block: 
+ 
  • The *reset* resets the output register.
+ 
  • *Read* takes data stored in memory and puts it in a registered output.
+ 
  • *Write* occurs when *we = 1*, the din is stored in *mem[addr]*.
+ 
  This provides complete synchrony of all operations like a normal digital RAM.
+ 
 The outpuut is gated using:
 
      code: assign douut = oe ? dout_reg : 2'b00;
@@ -74,9 +84,13 @@ Testbench includes controlled timing, clock generation and write the sequential 
 ## Conclusion:
 The Synchronous RAM was successfully implemented and verified. The design supports Synchronous Write, Synchronous Read, Registered Output, Reset Control and Output Enable.
 The behaviour of the RAM was consistent with the simulation and waveform analysis results, as the waveforms shows
+
 • There was appropriate storage of data written at rising edges.
+
 • After one clock cycle, Reads had the right values.
+
 • Reset and OE were working properly.
+
 The design is functional, dependable and clean. This establishes the correctness and compatibility of RAM module to work as a simple synchronous memory to be used in bigger digital systems.
 
 # OUTPUT 
